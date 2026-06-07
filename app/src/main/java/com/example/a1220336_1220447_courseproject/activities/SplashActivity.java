@@ -1,12 +1,14 @@
 package com.example.a1220336_1220447_courseproject.activities;
 
-import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import com.example.a1220336_1220447_courseproject.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -14,12 +16,21 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_splash);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        TextView logoText = findViewById(R.id.logoText);
+        TextView appName = findViewById(R.id.appName);
+
+        Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.scale_up);
+        Animation fadeAnim = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+
+        logoText.startAnimation(scaleAnim);
+        appName.startAnimation(fadeAnim);
+
+        new Handler().postDelayed(() -> {
+            Intent intent = new Intent(SplashActivity.this, IntroductionActivity.class);
+            startActivity(intent);
+            finish();
+        }, 3000);
     }
 }
