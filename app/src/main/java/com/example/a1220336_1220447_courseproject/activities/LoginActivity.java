@@ -8,7 +8,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.a1220336_1220447_courseproject.R;
+import com.example.a1220336_1220447_courseproject.database.DatabaseHelper;
+import com.example.a1220336_1220447_courseproject.models.User;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -16,6 +19,7 @@ public class LoginActivity extends AppCompatActivity {
     CheckBox rememberMeCheckBox;
     Button loginButton, signUpButton;
     SharedPreferences sharedPreferences;
+    DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         signUpButton = findViewById(R.id.signUpButton);
 
         sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        dbHelper = new DatabaseHelper(this);
 
         // لو Remember Me كان مفعل قبل
         String savedEmail = sharedPreferences.getString("email", "");
@@ -40,8 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(v -> loginUser());
 
         signUpButton.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
         });
     }
 
@@ -63,6 +67,21 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // التحقق من الـ Database
+        User user = dbHelper.getUserByEmail(email);
+
+        if (user == null) {
+            Toast.makeText(this, "Account not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // التحقق من الـ Password (مشفّر بـ MD5)
+        String hashedInput = hashPassword(password);
+        if (!hashedInput.equals(user.getPassword())) {
+            Toast.makeText(this, "Incorrect password", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Remember Me
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if (rememberMeCheckBox.isChecked()) {
@@ -70,12 +89,35 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             editor.remove("email");
         }
+
+        // احفظ الـ userId للاستخدام لاحقاً
+        editor.putInt("userId", user.getId());
+        editor.putBoolean("isAdmin", user.isAdmin());
         editor.apply();
 
-        // مؤقتاً ننقل للـ Home - لاحقاً نربطها بالـ Database
-        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-        startActivity(intent);
+        Toast.makeText(this, "Welcome " + user.getFirstName(), Toast.LENGTH_SHORT).show();
+
+        // وجّه حسب نوع المستخدم
+        if (user.isAdmin()) {
+            startActivity(new Intent(LoginActivity.this, AdminHomeActivity.class));
+        } else {
+            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+        }
         finish();
+    }
+
+    // MD5 hashing
+    private String hashPassword(String password) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] hashBytes = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            return password; // fallback
+        }
     }
 }
