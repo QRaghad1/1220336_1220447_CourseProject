@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.a1220336_1220447_courseproject.R;
 
 public class IntroductionActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
