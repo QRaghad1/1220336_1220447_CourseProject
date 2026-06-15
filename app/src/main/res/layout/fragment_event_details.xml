@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FBF5DD">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvDetailTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            android:text="Title"/>
+
+        <TextView
+            android:id="@+id/tvDetailCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#306D29"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp"
+            android:text="Category"/>
+
+        <TextView
+            android:id="@+id/tvDetailDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="Date"/>
+
+        <TextView
+            android:id="@+id/tvDetailTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="Time"/>
+
+        <TextView
+            android:id="@+id/tvDetailLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="Location"/>
+
+        <TextView
+            android:id="@+id/tvDetailSeats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp"
+            android:text="Seats"/>
+
+        <TextView
+            android:id="@+id/tvDetailDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginBottom="16dp"
+            android:text="Description"/>
+
+        <Button
+            android:id="@+id/btnFavorite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add to Favorites"
+            android:backgroundTint="#306D29"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/btnReserve"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reserve Now"
+            android:backgroundTint="#0D530E"/>
+
+    </LinearLayout>
+</ScrollView>
