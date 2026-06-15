@@ -3,8 +3,11 @@ package com.example.a1220336_1220447_courseproject.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.a1220336_1220447_courseproject.R;
+import com.example.a1220336_1220447_courseproject.api.ApiService;
 
 public class IntroductionActivity extends AppCompatActivity {
 
@@ -16,8 +19,28 @@ public class IntroductionActivity extends AppCompatActivity {
         Button connectButton = findViewById(R.id.connectButton);
 
         connectButton.setOnClickListener(v -> {
-            Intent intent = new Intent(IntroductionActivity.this, LoginActivity.class);
-            startActivity(intent);
+            connectButton.setEnabled(false);
+
+            ApiService apiService = new ApiService(this);
+            apiService.fetchAndStoreEvents(new ApiService.FetchCallback() {
+                @Override
+                public void onSuccess() {
+                    runOnUiThread(() -> {
+                        Intent intent = new Intent(IntroductionActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    });
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(IntroductionActivity.this,
+                                "Connection failed. Please try again.", Toast.LENGTH_LONG).show();
+                        connectButton.setEnabled(true);
+                    });
+                }
+            });
         });
     }
 }
