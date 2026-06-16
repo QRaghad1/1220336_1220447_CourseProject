@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp"
+    android:background="#EEEEEE">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_launcher_foreground"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Contact Us"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#1F6F5F"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/callButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="📞  Call Us"
+        android:textSize="16sp"
+        android:backgroundTint="#2FA084"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/locateButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="📍  Locate Us"
+        android:textSize="16sp"
+        android:backgroundTint="#2FA084"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/emailButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="✉️  Email Us"
+        android:textSize="16sp"
+        android:backgroundTint="#1F6F5F"
+        android:textColor="#FFFFFF"/>
+
+</LinearLayout>
