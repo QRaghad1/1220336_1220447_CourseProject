@@ -35,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         dbHelper = new DatabaseHelper(this);
 
-        // لو Remember Me كان مفعل قبل
         String savedEmail = sharedPreferences.getString("email", "");
         if (!savedEmail.isEmpty()) {
             emailEditText.setText(savedEmail);
@@ -53,7 +52,6 @@ public class LoginActivity extends AppCompatActivity {
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
-        // Validation
         if (email.isEmpty()) {
             emailEditText.setError("Email is required");
             return;
@@ -67,7 +65,6 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // التحقق من الـ Database
         User user = dbHelper.getUserByEmail(email);
 
         if (user == null) {
@@ -75,7 +72,6 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // التحقق من الـ Password (مشفّر بـ MD5)
         String hashedInput = hashPassword(password);
         if (!hashedInput.equals(user.getPassword())) {
             Toast.makeText(this, "Incorrect password", Toast.LENGTH_SHORT).show();
@@ -86,18 +82,18 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if (rememberMeCheckBox.isChecked()) {
             editor.putString("email", email);
+            editor.putString("password", hashPassword(password)); // مشفّر
         } else {
             editor.remove("email");
+            editor.remove("password");
         }
 
-        // احفظ الـ userId للاستخدام لاحقاً
         editor.putInt("userId", user.getId());
         editor.putBoolean("isAdmin", user.isAdmin());
         editor.apply();
 
         Toast.makeText(this, "Welcome " + user.getFirstName(), Toast.LENGTH_SHORT).show();
 
-        // وجّه حسب نوع المستخدم
         if (user.isAdmin()) {
             startActivity(new Intent(LoginActivity.this, AdminHomeActivity.class));
         } else {
@@ -106,7 +102,6 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    // MD5 hashing
     private String hashPassword(String password) {
         try {
             java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
@@ -117,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             return sb.toString();
         } catch (Exception e) {
-            return password; // fallback
+            return password;
         }
     }
 }

@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme._1220336_1220447_CourseProject">
         <activity
+<<<<<<< HEAD
+=======
+            android:name=".activities.HomeActivity"
+            android:exported="false" />
+        <activity
+>>>>>>> 7c12170a7de5c5e28a569fec81d297ad4d23f0fc
             android:name=".activities.AdminHomeActivity"
             android:exported="false" />
         <activity
