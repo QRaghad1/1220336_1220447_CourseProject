@@ -1,5 +1,8 @@
 package com.example.a1220336_1220447_courseproject.activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -10,9 +13,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.a1220336_1220447_courseproject.R;
+import com.example.a1220336_1220447_courseproject.fragments.ContactFragment;
 import com.example.a1220336_1220447_courseproject.fragments.EventsFragment;
 import com.example.a1220336_1220447_courseproject.fragments.FavoritesFragment;
 import com.example.a1220336_1220447_courseproject.fragments.FeaturedEventsFragment;
+import com.example.a1220336_1220447_courseproject.fragments.HomeFragment;
+import com.example.a1220336_1220447_courseproject.fragments.ProfileFragment;
 import com.example.a1220336_1220447_courseproject.fragments.ReservationsFragment;
 import com.google.android.material.navigation.NavigationView;
 
@@ -40,14 +46,15 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // افتح EventsFragment كأول شاشة
-        loadFragment(new EventsFragment());
+        loadFragment(new HomeFragment());
 
         navigationView.setNavigationItemSelectedListener(item -> {
             Fragment fragment = null;
             int id = item.getItemId();
 
-            if (id == R.id.nav_events) {
+            if (id == R.id.nav_home) {
+                fragment = new HomeFragment();
+            } else if (id == R.id.nav_events) {
                 fragment = new EventsFragment();
             } else if (id == R.id.nav_favorites) {
                 fragment = new FavoritesFragment();
@@ -55,6 +62,16 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new ReservationsFragment();
             } else if (id == R.id.nav_special) {
                 fragment = new FeaturedEventsFragment();
+            } else if (id == R.id.nav_profile) {
+                fragment = new ProfileFragment();
+            } else if (id == R.id.nav_contact) {
+                fragment = new ContactFragment();
+            } else if (id == R.id.nav_logout) {
+                SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                prefs.edit().clear().apply();
+                startActivity(new Intent(this, LoginActivity.class));
+                finish();
+                return true;
             }
 
             if (fragment != null) loadFragment(fragment);
