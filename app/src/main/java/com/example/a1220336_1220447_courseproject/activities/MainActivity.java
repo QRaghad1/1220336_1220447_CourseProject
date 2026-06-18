@@ -1,7 +1,6 @@
-package com.example.a1220336_1220447_courseproject;
+package com.example.a1220336_1220447_courseproject.activities;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +9,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.a1220336_1220447_courseproject.R;
 import com.example.a1220336_1220447_courseproject.fragments.EventsFragment;
 import com.example.a1220336_1220447_courseproject.fragments.FavoritesFragment;
 import com.example.a1220336_1220447_courseproject.fragments.FeaturedEventsFragment;

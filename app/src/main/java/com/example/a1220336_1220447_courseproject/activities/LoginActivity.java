@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
         if (user.isAdmin()) {
             startActivity(new Intent(LoginActivity.this, AdminHomeActivity.class));
         } else {
-            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+            startActivity(new Intent(LoginActivity.this,MainActivity.class));
         }
         finish();
     }
