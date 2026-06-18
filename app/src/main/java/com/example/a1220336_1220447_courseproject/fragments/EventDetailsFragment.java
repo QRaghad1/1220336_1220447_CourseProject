@@ -53,8 +53,12 @@ public class EventDetailsFragment extends Fragment {
         btnFavorite.setOnClickListener(v -> {
             SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
             int userId = sharedPreferences.getInt("userId", -1);
-            dbHelper.addFavorite(userId, event.getId());
-            Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
+            if (dbHelper.isFavorite(userId, event.getId())) {
+                Toast.makeText(getContext(), "Already in Favorites!", Toast.LENGTH_SHORT).show();
+            } else {
+                dbHelper.addFavorite(userId, event.getId());
+                Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
+            }
         });
 
         btnReserve.setOnClickListener(v -> {

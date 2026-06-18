@@ -71,8 +71,12 @@ public class EventsFragment extends Fragment {
 
             @Override
             public void onFavoriteClick(Event event) {
-                dbHelper.addFavorite(userId, event.getId());
-                Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
+                if (dbHelper.isFavorite(userId, event.getId())) {
+                    Toast.makeText(getContext(), "Already in Favorites!", Toast.LENGTH_SHORT).show();
+                } else {
+                    dbHelper.addFavorite(userId, event.getId());
+                    Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

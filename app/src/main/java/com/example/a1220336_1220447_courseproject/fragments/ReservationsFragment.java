@@ -53,7 +53,7 @@ public class ReservationsFragment extends Fragment {
                 adapter = new ReservationAdapter(requireContext(), reservations);
                 listView.setAdapter(adapter);
             } else {
-                // You could show a "No reservations yet" text here
+
             }
         }
     }

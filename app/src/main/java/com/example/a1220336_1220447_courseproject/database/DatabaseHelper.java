@@ -244,4 +244,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return list;
     }
+    public boolean isFavorite(int userId, int eventId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT id FROM favorites WHERE userId=? AND eventId=?",
+                new String[]{String.valueOf(userId), String.valueOf(eventId)});
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists;
+    }
 }

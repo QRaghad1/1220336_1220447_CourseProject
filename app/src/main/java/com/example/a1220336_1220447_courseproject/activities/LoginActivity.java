@@ -99,15 +99,14 @@ public class LoginActivity extends AppCompatActivity {
             editor.putString("email", email);
             editor.putString("password", hashPassword(password));
             editor.putBoolean("rememberMe", true);
-            editor.putInt("userId", user.getId());      // move inside
-            editor.putBoolean("isAdmin", user.isAdmin()); // move inside
         } else {
             editor.remove("email");
             editor.remove("password");
-            editor.remove("userId");        // clear on no remember me
-            editor.remove("isAdmin");       // clear on no remember me
             editor.putBoolean("rememberMe", false);
         }
+
+        editor.putInt("userId", user.getId());
+        editor.putBoolean("isAdmin", user.isAdmin());
         editor.apply();
 
         Toast.makeText(this, "Welcome " + user.getFirstName(), Toast.LENGTH_SHORT).show();
