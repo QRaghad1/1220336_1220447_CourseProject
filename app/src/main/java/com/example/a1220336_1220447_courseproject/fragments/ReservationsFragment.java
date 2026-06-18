@@ -38,12 +38,12 @@ public class ReservationsFragment extends Fragment {
         listView = view.findViewById(R.id.listReservations);
         dbHelper = DatabaseHelper.getInstance(getContext());
 
-        loadReservations();
+        loadReservations(view);
 
         return view;
     }
 
-    private void loadReservations() {
+    private void loadReservations(View view) {
         SharedPreferences prefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         int userId = prefs.getInt("userId", -1);
 
@@ -53,6 +53,8 @@ public class ReservationsFragment extends Fragment {
                 adapter = new ReservationAdapter(requireContext(), reservations);
                 listView.setAdapter(adapter);
             } else {
+                TextView tvEmpty = view.findViewById(R.id.tvEmptyReservations);
+                if (tvEmpty != null) tvEmpty.setVisibility(View.VISIBLE);
 
             }
         }

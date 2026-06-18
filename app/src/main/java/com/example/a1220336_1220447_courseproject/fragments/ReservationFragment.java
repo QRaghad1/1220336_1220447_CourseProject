@@ -75,8 +75,10 @@ public class ReservationFragment extends Fragment {
             String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
             String type = spinnerType.getSelectedItem().toString();
 
+
             Reservation reservation = new Reservation(0, userId, event.getId(), date, quantity, type, "Confirmed");
             long result = dbHelper.addReservation(reservation);
+
 
             if (result != -1) {
                 Toast.makeText(getContext(), "Reservation Confirmed!", Toast.LENGTH_SHORT).show();

@@ -15,9 +15,21 @@
         android:textColor="#0D530E"
         android:layout_marginBottom="8dp"/>
 
+    <TextView
+        android:id="@+id/tvEmptyReservations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No reservations yet"
+        android:textAlignment="center"
+        android:visibility="gone"
+        android:padding="20dp"
+        android:textColor="#666666"/>
+
     <ListView
         android:id="@+id/listReservations"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+
 
 </LinearLayout>

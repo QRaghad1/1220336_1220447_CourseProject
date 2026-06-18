@@ -38,6 +38,7 @@ public class ReservationAdapter extends ArrayAdapter<Reservation> {
         TextView tvDate = convertView.findViewById(R.id.tvResDate);
         TextView tvQty = convertView.findViewById(R.id.tvResQty);
         TextView tvType = convertView.findViewById(R.id.tvResType);
+        TextView tvStatus = convertView.findViewById(R.id.tvResStatus);
 
         if (reservation != null) {
             // Fetch event title from DB
@@ -51,6 +52,7 @@ public class ReservationAdapter extends ArrayAdapter<Reservation> {
             tvDate.setText("Date: " + reservation.getReservationDate());
             tvQty.setText("Qty: " + reservation.getQuantity());
             tvType.setText("Type: " + reservation.getType());
+            tvStatus.setText("Status: " + reservation.getStatus());
         }
 
         return convertView;
