@@ -1,5 +1,8 @@
 package com.example.a1220336_1220447_courseproject.activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -48,6 +51,9 @@ public class AdminHomeActivity extends AppCompatActivity {
             } else if (id == R.id.nav_admin_reservations) {
                 fragment = new com.example.a1220336_1220447_courseproject.fragments.AdminReservationsFragment();
             } else if (id == R.id.nav_admin_logout) {
+                SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                prefs.edit().clear().apply();
+                startActivity(new Intent(this, LoginActivity.class));
                 finish();
                 return true;
             }

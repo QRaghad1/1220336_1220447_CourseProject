@@ -35,6 +35,22 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         dbHelper = DatabaseHelper.getInstance(this);
 
+        // Auto-login if Remember Me was checked
+        boolean rememberMe = sharedPreferences.getBoolean("rememberMe", false);
+        int savedUserId = sharedPreferences.getInt("userId", -1);
+
+        if (rememberMe && savedUserId != -1) {
+            boolean isAdmin = sharedPreferences.getBoolean("isAdmin", false);
+            if (isAdmin) {
+                startActivity(new Intent(LoginActivity.this, AdminHomeActivity.class));
+            } else {
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            }
+            finish();
+            return;
+        }
+
+        // Fill email if Remember Me was checked before
         String savedEmail = sharedPreferences.getString("email", "");
         if (!savedEmail.isEmpty()) {
             emailEditText.setText(savedEmail);
@@ -74,18 +90,19 @@ public class LoginActivity extends AppCompatActivity {
 
         String hashedInput = hashPassword(password);
         if (!hashedInput.equals(user.getPassword())) {
-            Toast.makeText(this, "Incorrect password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, hashedInput, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Remember Me
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if (rememberMeCheckBox.isChecked()) {
             editor.putString("email", email);
-            editor.putString("password", hashPassword(password)); // مشفّر
+            editor.putString("password", hashPassword(password));
+            editor.putBoolean("rememberMe", true);
         } else {
             editor.remove("email");
             editor.remove("password");
+            editor.putBoolean("rememberMe", false);
         }
 
         editor.putInt("userId", user.getId());
@@ -97,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
         if (user.isAdmin()) {
             startActivity(new Intent(LoginActivity.this, AdminHomeActivity.class));
         } else {
-            startActivity(new Intent(LoginActivity.this,MainActivity.class));
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
         }
         finish();
     }

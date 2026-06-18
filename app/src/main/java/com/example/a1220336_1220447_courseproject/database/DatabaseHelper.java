@@ -17,7 +17,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "university_events.db";
-    private static final int DB_VERSION = 5;
+    private static final int DB_VERSION = 6;
 
     private static final String TABLE_USERS = "users";
     private static final String TABLE_EVENTS = "events";
@@ -77,7 +77,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "status TEXT)");
 
         db.execSQL("INSERT INTO " + TABLE_USERS + " (firstName, lastName, email, password, gender, major, phone, isAdmin) " +
-                "VALUES ('Admin', 'Admin', 'admin@admin.com', '0192023a7bbd73250516f069df18b500', 'Male', 'CS', '0000000', 1)");
+                "VALUES ('Admin', 'Admin', 'admin@admin.com', '2637a5c30af69a7bad877fdb65fbd78b', 'Male', 'CS', '0000000', 1)");
     }
 
     @Override
