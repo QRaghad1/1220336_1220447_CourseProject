@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/nav_home"
+        android:title="Home"/>
+
+    <item
         android:id="@+id/nav_events"
         android:title="Events"/>
 
@@ -16,5 +20,17 @@
     <item
         android:id="@+id/nav_special"
         android:title="Featured Events"/>
+
+    <item
+        android:id="@+id/nav_profile"
+        android:title="Profile"/>
+
+    <item
+        android:id="@+id/nav_contact"
+        android:title="Contact Us"/>
+
+    <item
+        android:id="@+id/nav_logout"
+        android:title="Logout"/>
 
 </menu>
