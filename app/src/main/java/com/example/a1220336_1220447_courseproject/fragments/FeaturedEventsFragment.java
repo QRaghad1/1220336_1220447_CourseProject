@@ -1,5 +1,7 @@
 package com.example.a1220336_1220447_courseproject.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,18 +26,23 @@ public class FeaturedEventsFragment extends Fragment {
     EventAdapter adapter;
     DatabaseHelper dbHelper;
 
+    private static final String FEATURED_CATEGORY = "Technology";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_featured_events, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerFeatured);
-        dbHelper = new DatabaseHelper(getContext());
+        dbHelper = DatabaseHelper.getInstance(getContext());
 
         List<Event> allEvents = dbHelper.getAllEvents();
         List<Event> featured = new ArrayList<>();
-        for (int i = 0; i < Math.min(5, allEvents.size()); i++) {
-            featured.add(allEvents.get(i));
+
+        for (Event e : allEvents) {
+            if (e.getCategory().equalsIgnoreCase(FEATURED_CATEGORY)) {
+                featured.add(e);
+            }
         }
 
         adapter = new EventAdapter(getContext(), featured, new EventAdapter.OnEventClickListener() {
@@ -51,7 +58,14 @@ public class FeaturedEventsFragment extends Fragment {
 
             @Override
             public void onFavoriteClick(Event event) {
-                dbHelper.addFavorite(1, event.getId());
+                SharedPreferences prefs = requireContext()
+                        .getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                int userId = prefs.getInt("userId", -1);
+                if (userId == -1) {
+                    Toast.makeText(getContext(), "Please login again.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                dbHelper.addFavorite(userId, event.getId());
                 Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
             }
         });
