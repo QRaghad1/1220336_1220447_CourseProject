@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.a1220336_1220447_courseproject.models.Event;
 import com.example.a1220336_1220447_courseproject.models.Favorite;
@@ -16,8 +17,9 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    private static final String TAG = "DatabaseHelper";
     private static final String DB_NAME = "university_events.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 3; // Incremented to reset and apply fixes
 
     // Tables
     private static final String TABLE_USERS = "users";
@@ -72,9 +74,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "type TEXT," +
                 "status TEXT)");
 
-        // Insert default admin
+        // Insert default admin with MD5 hashed password for "Admin123!"
         db.execSQL("INSERT INTO " + TABLE_USERS + " (firstName, lastName, email, password, gender, major, phone, isAdmin) " +
-                "VALUES ('Admin', 'Admin', 'admin@admin.com', 'Admin123!', 'Male', 'CS', '0000000', 1)");
+                "VALUES ('Admin', 'Admin', 'admin@admin.com', '0192023a7bbd73250516f069df18b500', 'Male', 'CS', '0000000', 1)");
     }
 
     @Override
@@ -86,37 +88,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // ========== USER METHODS ==========
-
     public long addUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("firstName", user.getFirstName());
         values.put("lastName", user.getLastName());
-        values.put("email", user.getEmail());
+        values.put("email", user.getEmail().toLowerCase().trim());
         values.put("password", user.getPassword());
         values.put("gender", user.getGender());
         values.put("major", user.getMajor());
         values.put("phone", user.getPhone());
         values.put("profileImage", user.getProfileImage());
         values.put("isAdmin", user.isAdmin() ? 1 : 0);
-        return db.insert(TABLE_USERS, null, values);
+        long id = db.insert(TABLE_USERS, null, values);
+        Log.d(TAG, "User added with ID: " + id + " Email: " + user.getEmail());
+        return id;
     }
 
     public User getUserByEmail(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE email=?", new String[]{email});
-        if (cursor.moveToFirst()) {
-            User user = new User(
+        String cleanEmail = email.toLowerCase().trim();
+        Log.d(TAG, "Searching for user with email: " + cleanEmail);
+        
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE LOWER(email) = ?", new String[]{cleanEmail});
+        
+        User user = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new User(
                     cursor.getInt(0), cursor.getString(1), cursor.getString(2),
                     cursor.getString(3), cursor.getString(4), cursor.getString(5),
                     cursor.getString(6), cursor.getString(7), cursor.getString(8),
                     cursor.getInt(9) == 1);
-            cursor.close();
-            return user;
+            Log.d(TAG, "User found: " + user.getFirstName());
+        } else {
+            Log.d(TAG, "No user found with email: " + cleanEmail);
         }
-        cursor.close();
-        return null;
+        
+        if (cursor != null) cursor.close();
+        return user;
     }
 
     public boolean updateUser(User user) {

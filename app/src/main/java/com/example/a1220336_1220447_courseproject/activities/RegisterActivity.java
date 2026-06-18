@@ -101,8 +101,9 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // حفظ في الـ Database
-        User user = new User(0, firstName, lastName, email, password, gender, major, phone, null, false);
+        // Hash password before saving
+        String hashedPassword = hashPassword(password);
+        User user = new User(0, firstName, lastName, email, hashedPassword, gender, major, phone, null, false);
         long result = databaseHelper.addUser(user);
 
         if (result != -1) {
@@ -112,6 +113,20 @@ public class RegisterActivity extends AppCompatActivity {
             finish();
         } else {
             Toast.makeText(this, "Email already exists!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String hashPassword(String password) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] hashBytes = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            return password;
         }
     }
 }
