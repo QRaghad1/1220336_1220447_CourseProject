@@ -122,6 +122,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(TABLE_USERS, "id=?", new String[]{String.valueOf(id)}) > 0;
     }
+    public User getUserById(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE id = ?",
+                new String[]{String.valueOf(id)});
+        User user = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new User(cursor.getInt(0), cursor.getString(1), cursor.getString(2),
+                    cursor.getString(3), cursor.getString(4), cursor.getString(5),
+                    cursor.getString(6), cursor.getString(7), cursor.getString(8),
+                    cursor.getInt(9) == 1);
+        }
+        if (cursor != null) cursor.close();
+        return user;
+    }
+
+    public boolean updateUser(User user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("firstName", user.getFirstName());
+        values.put("lastName", user.getLastName());
+        values.put("phone", user.getPhone());
+        values.put("password", user.getPassword());
+        values.put("profileImage", user.getProfileImage());
+        return db.update(TABLE_USERS, values, "id=?",
+                new String[]{String.valueOf(user.getId())}) > 0;
+    }
 
     public User getUserByEmail(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -150,6 +176,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("seats", event.getSeats());
         values.put("image", event.getImage());
         return db.insertWithOnConflict(TABLE_EVENTS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+    public boolean deleteEvent(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_EVENTS, "id=?", new String[]{String.valueOf(id)}) > 0;
+    }
+
+    public boolean updateEvent(Event event) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("title", event.getTitle());
+        values.put("description", event.getDescription());
+        values.put("category", event.getCategory());
+        values.put("date", event.getDate());
+        values.put("time", event.getTime());
+        values.put("location", event.getLocation());
+        values.put("seats", event.getSeats());
+        values.put("image", event.getImage());
+        return db.update(TABLE_EVENTS, values, "id=?",
+                new String[]{String.valueOf(event.getId())}) > 0;
     }
 
     public List<Event> getAllEvents() {

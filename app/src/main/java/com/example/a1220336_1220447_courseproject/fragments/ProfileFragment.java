@@ -1,7 +1,9 @@
 package com.example.a1220336_1220447_courseproject.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -18,12 +20,17 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
 import com.example.a1220336_1220447_courseproject.R;
+import com.example.a1220336_1220447_courseproject.database.DatabaseHelper;
+import com.example.a1220336_1220447_courseproject.models.User;
 
 public class ProfileFragment extends Fragment {
 
     ImageView imgProfile;
     Button btnChangePhoto, btnSave;
     EditText etFirstName, etLastName, etPhone, etPassword;
+    DatabaseHelper dbHelper;
+    User currentUser;
+    String selectedImageUri = null;
 
     ActivityResultLauncher<Intent> imagePickerLauncher;
 
@@ -40,12 +47,35 @@ public class ProfileFragment extends Fragment {
         etPhone = view.findViewById(R.id.etPhone);
         etPassword = view.findViewById(R.id.etPassword);
 
+        dbHelper = DatabaseHelper.getInstance(getContext());
+
+        // Load current user
+        SharedPreferences prefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
+
+        if (userId == -1) {
+            Toast.makeText(getContext(), "Session error. Please login again.", Toast.LENGTH_SHORT).show();
+            return view;
+        }
+
+        currentUser = dbHelper.getUserById(userId);
+
+        if (currentUser != null) {
+            etFirstName.setText(currentUser.getFirstName());
+            etLastName.setText(currentUser.getLastName());
+            etPhone.setText(currentUser.getPhone());
+            if (currentUser.getProfileImage() != null && !currentUser.getProfileImage().isEmpty()) {
+                imgProfile.setImageURI(Uri.parse(currentUser.getProfileImage()));
+            }
+        }
+
         // Image picker
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
+                        selectedImageUri = imageUri.toString();
                         imgProfile.setImageURI(imageUri);
                     }
                 });
@@ -61,7 +91,6 @@ public class ProfileFragment extends Fragment {
             String phone = etPhone.getText().toString().trim();
             String password = etPassword.getText().toString().trim();
 
-            // Validation
             if (firstName.length() < 3) {
                 etFirstName.setError("Minimum 3 characters");
                 return;
@@ -81,9 +110,38 @@ public class ProfileFragment extends Fragment {
                 }
             }
 
-            Toast.makeText(getContext(), "Profile updated!", Toast.LENGTH_SHORT).show();
+            currentUser.setFirstName(firstName);
+            currentUser.setLastName(lastName);
+            currentUser.setPhone(phone);
+            if (!password.isEmpty()) {
+                currentUser.setPassword(hashPassword(password));
+            }
+            if (selectedImageUri != null) {
+                currentUser.setProfileImage(selectedImageUri);
+            }
+
+            boolean updated = dbHelper.updateUser(currentUser);
+            if (updated) {
+                Toast.makeText(getContext(), "Profile updated!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Update failed!", Toast.LENGTH_SHORT).show();
+            }
         });
 
         return view;
+    }
+
+    private String hashPassword(String password) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] hashBytes = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            return password;
+        }
     }
 }
