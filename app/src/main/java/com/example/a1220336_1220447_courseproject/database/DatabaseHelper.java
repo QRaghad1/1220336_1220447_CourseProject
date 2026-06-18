@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.a1220336_1220447_courseproject.models.Event;
 import com.example.a1220336_1220447_courseproject.models.Favorite;
@@ -17,15 +16,22 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String TAG = "DatabaseHelper";
     private static final String DB_NAME = "university_events.db";
-    private static final int DB_VERSION = 3; // Incremented to reset and apply fixes
+    private static final int DB_VERSION = 5;
 
-    // Tables
     private static final String TABLE_USERS = "users";
     private static final String TABLE_EVENTS = "events";
     private static final String TABLE_FAVORITES = "favorites";
     private static final String TABLE_RESERVATIONS = "reservations";
+
+    private static DatabaseHelper instance;
+
+    public static synchronized DatabaseHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new DatabaseHelper(context.getApplicationContext());
+        }
+        return instance;
+    }
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -33,7 +39,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Users table
         db.execSQL("CREATE TABLE " + TABLE_USERS + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "firstName TEXT," +
@@ -46,7 +51,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "profileImage TEXT," +
                 "isAdmin INTEGER DEFAULT 0)");
 
-        // Events table
         db.execSQL("CREATE TABLE " + TABLE_EVENTS + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "title TEXT," +
@@ -58,13 +62,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "seats INTEGER," +
                 "image TEXT)");
 
-        // Favorites table
         db.execSQL("CREATE TABLE " + TABLE_FAVORITES + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "userId INTEGER," +
                 "eventId INTEGER)");
 
-        // Reservations table
         db.execSQL("CREATE TABLE " + TABLE_RESERVATIONS + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "userId INTEGER," +
@@ -74,7 +76,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "type TEXT," +
                 "status TEXT)");
 
-        // Insert default admin with MD5 hashed password for "Admin123!"
         db.execSQL("INSERT INTO " + TABLE_USERS + " (firstName, lastName, email, password, gender, major, phone, isAdmin) " +
                 "VALUES ('Admin', 'Admin', 'admin@admin.com', '0192023a7bbd73250516f069df18b500', 'Male', 'CS', '0000000', 1)");
     }
@@ -100,49 +101,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("phone", user.getPhone());
         values.put("profileImage", user.getProfileImage());
         values.put("isAdmin", user.isAdmin() ? 1 : 0);
-        long id = db.insert(TABLE_USERS, null, values);
-        Log.d(TAG, "User added with ID: " + id + " Email: " + user.getEmail());
-        return id;
-    }
-
-    public User getUserByEmail(String email) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String cleanEmail = email.toLowerCase().trim();
-        Log.d(TAG, "Searching for user with email: " + cleanEmail);
-        
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE LOWER(email) = ?", new String[]{cleanEmail});
-        
-        User user = null;
-        if (cursor != null && cursor.moveToFirst()) {
-            user = new User(
-                    cursor.getInt(0), cursor.getString(1), cursor.getString(2),
-                    cursor.getString(3), cursor.getString(4), cursor.getString(5),
-                    cursor.getString(6), cursor.getString(7), cursor.getString(8),
-                    cursor.getInt(9) == 1);
-            Log.d(TAG, "User found: " + user.getFirstName());
-        } else {
-            Log.d(TAG, "No user found with email: " + cleanEmail);
-        }
-        
-        if (cursor != null) cursor.close();
-        return user;
-    }
-
-    public boolean updateUser(User user) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("firstName", user.getFirstName());
-        values.put("lastName", user.getLastName());
-        values.put("password", user.getPassword());
-        values.put("phone", user.getPhone());
-        values.put("profileImage", user.getProfileImage());
-        return db.update(TABLE_USERS, values, "id=?", new String[]{String.valueOf(user.getId())}) > 0;
+        return db.insert(TABLE_USERS, null, values);
     }
 
     public List<User> getAllUsers() {
         List<User> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE isAdmin=0", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS, null);
         while (cursor.moveToNext()) {
             list.add(new User(cursor.getInt(0), cursor.getString(1), cursor.getString(2),
                     cursor.getString(3), cursor.getString(4), cursor.getString(5),
@@ -153,16 +118,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    public boolean deleteUser(int userId) {
+    public boolean deleteUser(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_USERS, "id=?", new String[]{String.valueOf(userId)}) > 0;
+        return db.delete(TABLE_USERS, "id=?", new String[]{String.valueOf(id)}) > 0;
     }
 
-    // ========== EVENT METHODS ==========
+    public User getUserByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE LOWER(email) = ?", new String[]{email.toLowerCase().trim()});
+        User user = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new User(cursor.getInt(0), cursor.getString(1), cursor.getString(2),
+                    cursor.getString(3), cursor.getString(4), cursor.getString(5),
+                    cursor.getString(6), cursor.getString(7), cursor.getString(8),
+                    cursor.getInt(9) == 1);
+        }
+        if (cursor != null) cursor.close();
+        return user;
+    }
 
     public long addEvent(Event event) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        if (event.getId() != 0) values.put("id", event.getId());
         values.put("title", event.getTitle());
         values.put("description", event.getDescription());
         values.put("category", event.getCategory());
@@ -171,7 +149,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("location", event.getLocation());
         values.put("seats", event.getSeats());
         values.put("image", event.getImage());
-        return db.insert(TABLE_EVENTS, null, values);
+        return db.insertWithOnConflict(TABLE_EVENTS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     public List<Event> getAllEvents() {
@@ -187,26 +165,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    public boolean updateEvent(Event event) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("title", event.getTitle());
-        values.put("description", event.getDescription());
-        values.put("category", event.getCategory());
-        values.put("date", event.getDate());
-        values.put("time", event.getTime());
-        values.put("location", event.getLocation());
-        values.put("seats", event.getSeats());
-        values.put("image", event.getImage());
-        return db.update(TABLE_EVENTS, values, "id=?", new String[]{String.valueOf(event.getId())}) > 0;
+    public Event getEventById(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_EVENTS + " WHERE id = ?", new String[]{String.valueOf(id)});
+        Event event = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            event = new Event(cursor.getInt(0), cursor.getString(1), cursor.getString(2),
+                    cursor.getString(3), cursor.getString(4), cursor.getString(5),
+                    cursor.getString(6), cursor.getInt(7), cursor.getString(8));
+        }
+        if (cursor != null) cursor.close();
+        return event;
     }
-
-    public boolean deleteEvent(int eventId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_EVENTS, "id=?", new String[]{String.valueOf(eventId)}) > 0;
-    }
-
-    // ========== FAVORITE METHODS ==========
 
     public long addFavorite(int userId, int eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -218,26 +188,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean removeFavorite(int userId, int eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_FAVORITES, "userId=? AND eventId=?",
-                new String[]{String.valueOf(userId), String.valueOf(eventId)}) > 0;
-    }
-
-    public boolean isFavorite(int userId, int eventId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id FROM " + TABLE_FAVORITES +
-                        " WHERE userId=? AND eventId=?",
-                new String[]{String.valueOf(userId), String.valueOf(eventId)});
-        boolean result = cursor.moveToFirst();
-        cursor.close();
-        return result;
+        return db.delete(TABLE_FAVORITES, "userId=? AND eventId=?", new String[]{String.valueOf(userId), String.valueOf(eventId)}) > 0;
     }
 
     public List<Event> getFavoriteEvents(int userId) {
         List<Event> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT e.* FROM " + TABLE_EVENTS + " e " +
+        String query = "SELECT e.* FROM " + TABLE_EVENTS + " e " +
                 "JOIN " + TABLE_FAVORITES + " f ON e.id = f.eventId " +
-                "WHERE f.userId=?", new String[]{String.valueOf(userId)});
+                "WHERE f.userId = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
         while (cursor.moveToNext()) {
             list.add(new Event(cursor.getInt(0), cursor.getString(1), cursor.getString(2),
                     cursor.getString(3), cursor.getString(4), cursor.getString(5),
@@ -246,8 +206,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return list;
     }
-
-    // ========== RESERVATION METHODS ==========
 
     public long addReservation(Reservation reservation) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -264,11 +222,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Reservation> getUserReservations(int userId) {
         List<Reservation> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_RESERVATIONS + " WHERE userId=?",
-                new String[]{String.valueOf(userId)});
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_RESERVATIONS + " WHERE userId = ?", new String[]{String.valueOf(userId)});
         while (cursor.moveToNext()) {
             list.add(new Reservation(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2),
-                    cursor.getString(3), cursor.getInt(4), cursor.getString(5), cursor.getString(6)));
+                    cursor.getString(3), cursor.getInt(4), cursor.getString(5),
+                    cursor.getString(6)));
         }
         cursor.close();
         return list;
@@ -280,7 +238,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_RESERVATIONS, null);
         while (cursor.moveToNext()) {
             list.add(new Reservation(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2),
-                    cursor.getString(3), cursor.getInt(4), cursor.getString(5), cursor.getString(6)));
+                    cursor.getString(3), cursor.getInt(4), cursor.getString(5),
+                    cursor.getString(6)));
         }
         cursor.close();
         return list;

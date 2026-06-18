@@ -1,5 +1,7 @@
 package com.example.a1220336_1220447_courseproject.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a1220336_1220447_courseproject.R;
 import com.example.a1220336_1220447_courseproject.adapters.EventAdapter;
+import com.example.a1220336_1220447_courseproject.api.ApiService;
 import com.example.a1220336_1220447_courseproject.database.DatabaseHelper;
 import com.example.a1220336_1220447_courseproject.models.Event;
 
@@ -31,6 +34,7 @@ public class EventsFragment extends Fragment {
     List<Event> allEvents, filteredEvents;
     EditText etSearch;
     Spinner spinnerFilter;
+    int userId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,8 +45,17 @@ public class EventsFragment extends Fragment {
         etSearch = view.findViewById(R.id.etSearch);
         spinnerFilter = view.findViewById(R.id.spinnerFilter);
 
-        dbHelper = new DatabaseHelper(getContext());
+        // Session
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        userId = sharedPreferences.getInt("userId", -1);
+
+        dbHelper = DatabaseHelper.getInstance(getContext());
         allEvents = dbHelper.getAllEvents();
+        
+        if (allEvents.isEmpty()) {
+            fetchEventsFromApi();
+        }
+
         filteredEvents = new ArrayList<>(allEvents);
 
         adapter = new EventAdapter(getContext(), filteredEvents, new EventAdapter.OnEventClickListener() {
@@ -58,8 +71,7 @@ public class EventsFragment extends Fragment {
 
             @Override
             public void onFavoriteClick(Event event) {
-                // userId هنا مؤقت، رح نربطه بالـ session لاحقاً
-                dbHelper.addFavorite(1, event.getId());
+                dbHelper.addFavorite(userId, event.getId());
                 Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -76,7 +88,39 @@ public class EventsFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        // Filter spinner
+        setupCategorySpinner();
+
+        return view;
+    }
+
+    private void fetchEventsFromApi() {
+        ApiService apiService = new ApiService(getContext());
+        apiService.fetchAndStoreEvents(new ApiService.FetchCallback() {
+            @Override
+            public void onSuccess() {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        allEvents = dbHelper.getAllEvents();
+                        filteredEvents.clear();
+                        filteredEvents.addAll(allEvents);
+                        adapter.updateList(filteredEvents);
+                        setupCategorySpinner();
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> 
+                        Toast.makeText(getContext(), "Failed to sync events: " + error, Toast.LENGTH_SHORT).show()
+                    );
+                }
+            }
+        });
+    }
+
+    private void setupCategorySpinner() {
         List<String> categories = new ArrayList<>();
         categories.add("All");
         for (Event e : allEvents) {
@@ -86,8 +130,6 @@ public class EventsFragment extends Fragment {
                 android.R.layout.simple_spinner_item, categories);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerFilter.setAdapter(spinnerAdapter);
-
-        return view;
     }
 
     private void filterEvents(String query, String category) {

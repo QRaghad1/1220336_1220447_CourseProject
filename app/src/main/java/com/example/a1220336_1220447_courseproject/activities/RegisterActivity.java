@@ -24,7 +24,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        databaseHelper = new DatabaseHelper(this);
+        databaseHelper = DatabaseHelper.getInstance(this);
 
         firstNameEditText       = findViewById(R.id.firstNameEditText);
         lastNameEditText        = findViewById(R.id.lastNameEditText);

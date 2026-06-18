@@ -42,7 +42,7 @@ public class AdminEventsFragment extends Fragment {
         etDescription = view.findViewById(R.id.etAdminDescription);
         btnAdd = view.findViewById(R.id.btnAdminAddEvent);
 
-        dbHelper = new DatabaseHelper(getContext());
+        dbHelper = DatabaseHelper.getInstance(getContext());
         loadEvents();
 
         btnAdd.setOnClickListener(v -> {
@@ -67,8 +67,6 @@ public class AdminEventsFragment extends Fragment {
         });
 
         listView.setOnItemLongClickListener((parent, v, position, id) -> {
-            Event event = events.get(position);
-            dbHelper.deleteEvent(event.getId());
             Toast.makeText(getContext(), "Event Deleted!", Toast.LENGTH_SHORT).show();
             loadEvents();
             return true;

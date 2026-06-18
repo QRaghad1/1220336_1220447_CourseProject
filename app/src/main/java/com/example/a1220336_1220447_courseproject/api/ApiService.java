@@ -10,7 +10,7 @@ public class ApiService {
     private DatabaseHelper dbHelper;
 
     public ApiService(Context context) {
-        dbHelper = new DatabaseHelper(context);
+        dbHelper = DatabaseHelper.getInstance(context);
     }
 
     public interface FetchCallback {

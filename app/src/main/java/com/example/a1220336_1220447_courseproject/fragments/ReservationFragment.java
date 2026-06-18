@@ -1,5 +1,7 @@
 package com.example.a1220336_1220447_courseproject.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +43,7 @@ public class ReservationFragment extends Fragment {
         Spinner spinnerType = view.findViewById(R.id.spinnerType);
         Button btnConfirm = view.findViewById(R.id.btnConfirm);
 
-        dbHelper = new DatabaseHelper(getContext());
+        dbHelper = DatabaseHelper.getInstance(getContext());
 
         List<String> types = Arrays.asList("Online", "In-Person", "Hybrid");
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
@@ -61,14 +63,27 @@ public class ReservationFragment extends Fragment {
                 return;
             }
 
+            // Get actual logged in userId
+            SharedPreferences prefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+            int userId = prefs.getInt("userId", -1);
+
+            if (userId == -1) {
+                Toast.makeText(getContext(), "Session error. Please login again.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
             String type = spinnerType.getSelectedItem().toString();
 
-            Reservation reservation = new Reservation(0, 1, event.getId(), date, quantity, type, "Confirmed");
-            dbHelper.addReservation(reservation);
+            Reservation reservation = new Reservation(0, userId, event.getId(), date, quantity, type, "Confirmed");
+            long result = dbHelper.addReservation(reservation);
 
-            Toast.makeText(getContext(), "Reservation Confirmed!", Toast.LENGTH_SHORT).show();
-            requireActivity().getSupportFragmentManager().popBackStack();
+            if (result != -1) {
+                Toast.makeText(getContext(), "Reservation Confirmed!", Toast.LENGTH_SHORT).show();
+                requireActivity().getSupportFragmentManager().popBackStack();
+            } else {
+                Toast.makeText(getContext(), "Reservation failed.", Toast.LENGTH_SHORT).show();
+            }
         });
 
         return view;

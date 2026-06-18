@@ -1,5 +1,7 @@
 package com.example.a1220336_1220447_courseproject.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +24,7 @@ public class FavoritesFragment extends Fragment {
     RecyclerView recyclerView;
     EventAdapter adapter;
     DatabaseHelper dbHelper;
+    int userId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -29,10 +32,12 @@ public class FavoritesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerFavorites);
-        dbHelper = new DatabaseHelper(getContext());
+        dbHelper = DatabaseHelper.getInstance(getContext());
 
-        // userId مؤقت = 1، رح نربطه بالـ session لاحقاً
-        List<Event> favorites = dbHelper.getFavoriteEvents(1);
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        userId = sharedPreferences.getInt("userId", -1);
+
+        List<Event> favorites = dbHelper.getFavoriteEvents(userId);
 
         adapter = new EventAdapter(getContext(), favorites, new EventAdapter.OnEventClickListener() {
             @Override
@@ -47,10 +52,9 @@ public class FavoritesFragment extends Fragment {
 
             @Override
             public void onFavoriteClick(Event event) {
-                dbHelper.removeFavorite(1, event.getId());
+                dbHelper.removeFavorite(userId, event.getId());
                 Toast.makeText(getContext(), "Removed from Favorites!", Toast.LENGTH_SHORT).show();
-                // تحديث القائمة
-                List<Event> updated = dbHelper.getFavoriteEvents(1);
+                List<Event> updated = dbHelper.getFavoriteEvents(userId);
                 adapter.updateList(updated);
             }
         });

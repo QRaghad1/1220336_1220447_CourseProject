@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         signUpButton = findViewById(R.id.signUpButton);
 
         sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        dbHelper = new DatabaseHelper(this);
+        dbHelper = DatabaseHelper.getInstance(this);
 
         String savedEmail = sharedPreferences.getString("email", "");
         if (!savedEmail.isEmpty()) {

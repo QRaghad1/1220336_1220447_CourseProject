@@ -1,5 +1,7 @@
 package com.example.a1220336_1220447_courseproject.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +40,7 @@ public class EventDetailsFragment extends Fragment {
         Button btnReserve = view.findViewById(R.id.btnReserve);
         Button btnFavorite = view.findViewById(R.id.btnFavorite);
 
-        dbHelper = new DatabaseHelper(getContext());
+        dbHelper = DatabaseHelper.getInstance(getContext());
 
         tvTitle.setText(event.getTitle());
         tvCategory.setText(event.getCategory());
@@ -49,7 +51,9 @@ public class EventDetailsFragment extends Fragment {
         tvDescription.setText(event.getDescription());
 
         btnFavorite.setOnClickListener(v -> {
-            dbHelper.addFavorite(1, event.getId());
+            SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+            int userId = sharedPreferences.getInt("userId", -1);
+            dbHelper.addFavorite(userId, event.getId());
             Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
         });
 
