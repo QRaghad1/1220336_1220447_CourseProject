@@ -8,54 +8,54 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="16dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Manage Events"
+            android:text="Edit Event"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#1F6F5F"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="16dp"/>
 
         <EditText
-            android:id="@+id/etAdminTitle"
+            android:id="@+id/etEditTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Title *"
             android:layout_marginBottom="8dp"/>
 
         <EditText
-            android:id="@+id/etAdminCategory"
+            android:id="@+id/etEditCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Category *"
             android:layout_marginBottom="8dp"/>
 
         <EditText
-            android:id="@+id/etAdminDate"
+            android:id="@+id/etEditDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Date * (yyyy-MM-dd)"
             android:layout_marginBottom="8dp"/>
 
         <EditText
-            android:id="@+id/etAdminTime"
+            android:id="@+id/etEditTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Time"
             android:layout_marginBottom="8dp"/>
 
         <EditText
-            android:id="@+id/etAdminLocation"
+            android:id="@+id/etEditLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Location"
             android:layout_marginBottom="8dp"/>
 
         <EditText
-            android:id="@+id/etAdminSeats"
+            android:id="@+id/etEditSeats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Seats"
@@ -63,24 +63,26 @@
             android:layout_marginBottom="8dp"/>
 
         <EditText
-            android:id="@+id/etAdminDescription"
+            android:id="@+id/etEditDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Description"
             android:layout_marginBottom="16dp"/>
 
         <Button
-            android:id="@+id/btnAdminAddEvent"
+            android:id="@+id/btnSaveEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add Event"
+            android:text="Save Changes"
             android:backgroundTint="#1F6F5F"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="8dp"/>
 
-        <ListView
-            android:id="@+id/listAdminEvents"
+        <Button
+            android:id="@+id/btnCancelEdit"
             android:layout_width="match_parent"
-            android:layout_height="400dp"/>
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:backgroundTint="#888888"/>
 
     </LinearLayout>
 </ScrollView>

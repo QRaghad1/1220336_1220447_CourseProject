@@ -1,10 +1,10 @@
 package com.example.a1220336_1220447_courseproject.fragments;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -13,10 +13,10 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.a1220336_1220447_courseproject.R;
+import com.example.a1220336_1220447_courseproject.adapters.AdminEventAdapter;
 import com.example.a1220336_1220447_courseproject.database.DatabaseHelper;
 import com.example.a1220336_1220447_courseproject.models.Event;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AdminEventsFragment extends Fragment {
@@ -24,6 +24,7 @@ public class AdminEventsFragment extends Fragment {
     ListView listView;
     DatabaseHelper dbHelper;
     List<Event> events;
+    AdminEventAdapter adapter;
     EditText etTitle, etCategory, etDate, etTime, etLocation, etSeats, etDescription;
     Button btnAdd;
 
@@ -59,30 +60,71 @@ public class AdminEventsFragment extends Fragment {
                 return;
             }
 
-            int seats = seatsStr.isEmpty() ? 0 : Integer.parseInt(seatsStr);
+            int seats;
+            try {
+                seats = seatsStr.isEmpty() ? 0 : Integer.parseInt(seatsStr);
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Seats must be a valid number!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             Event event = new Event(0, title, description, category, date, time, location, seats, "");
             dbHelper.addEvent(event);
             Toast.makeText(getContext(), "Event Added!", Toast.LENGTH_SHORT).show();
+            clearFields();
             loadEvents();
-        });
-
-        listView.setOnItemLongClickListener((parent, v, position, id) -> {
-            Toast.makeText(getContext(), "Event Deleted!", Toast.LENGTH_SHORT).show();
-            loadEvents();
-            return true;
         });
 
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (dbHelper != null) {
+            loadEvents();
+        }
+    }
+
+    private void clearFields() {
+        etTitle.setText("");
+        etCategory.setText("");
+        etDate.setText("");
+        etTime.setText("");
+        etLocation.setText("");
+        etSeats.setText("");
+        etDescription.setText("");
+    }
+
     private void loadEvents() {
         events = dbHelper.getAllEvents();
-        List<String> displayList = new ArrayList<>();
-        for (Event e : events) {
-            displayList.add(e.getTitle() + "\n" + e.getCategory() + " - " + e.getDate());
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_list_item_1, displayList);
+
+        adapter = new AdminEventAdapter(getContext(), events, new AdminEventAdapter.OnEventActionListener() {
+            @Override
+            public void onEditClick(Event event) {
+                EditEventFragment editFragment = new EditEventFragment(event);
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.admin_fragment_container, editFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onDeleteClick(Event event) {
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Delete Event")
+                        .setMessage("Are you sure you want to delete \"" + event.getTitle() + "\"?")
+                        .setPositiveButton("Delete", (dialog, which) -> {
+                            dbHelper.deleteEvent(event.getId());
+                            Toast.makeText(getContext(), "Event Deleted!", Toast.LENGTH_SHORT).show();
+                            loadEvents();
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            }
+        });
+
         listView.setAdapter(adapter);
     }
 }
