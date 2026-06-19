@@ -8,10 +8,10 @@
     android:background="#EEEEEE">
 
     <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@mipmap/ic_launcher"
-        android:layout_marginBottom="24dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/university_app_home_page_photo_showing_diverse_students_on_a_modern_campus__studying_with_laptops_and_tablets__bright_and_welcoming_atmosphere__professional_photography_style" />
 
     <TextView
         android:layout_width="wrap_content"
