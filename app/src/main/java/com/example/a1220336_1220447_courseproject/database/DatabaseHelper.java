@@ -222,10 +222,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null) cursor.close();
         return event;
     }
-    public void deleteAllEvents() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_EVENTS, null, null);
-    }
 
     public long addFavorite(int userId, int eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
