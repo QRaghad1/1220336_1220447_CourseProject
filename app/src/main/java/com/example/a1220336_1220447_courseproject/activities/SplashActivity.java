@@ -1,7 +1,6 @@
 package com.example.a1220336_1220447_courseproject.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.animation.Animation;
@@ -27,22 +26,7 @@ public class SplashActivity extends AppCompatActivity {
         appName.startAnimation(fadeAnim);
 
         new Handler().postDelayed(() -> {
-            SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-            boolean rememberMe = prefs.getBoolean("rememberMe", false);
-            int userId = prefs.getInt("userId", -1);
-            boolean isAdmin = prefs.getBoolean("isAdmin", false);
-
-            Intent intent;
-            if (rememberMe && userId != -1) {
-                if (isAdmin) {
-                    intent = new Intent(SplashActivity.this, AdminHomeActivity.class);
-                } else {
-                    intent = new Intent(SplashActivity.this, MainActivity.class);
-                }
-            } else {
-                intent = new Intent(SplashActivity.this, IntroductionActivity.class);
-            }
-            startActivity(intent);
+            startActivity(new Intent(SplashActivity.this, IntroductionActivity.class));
             finish();
         }, 3000);
     }

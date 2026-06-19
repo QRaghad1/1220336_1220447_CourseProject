@@ -17,7 +17,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "university_events.db";
-    private static final int DB_VERSION = 6;
+    private static final int DB_VERSION = 7;
 
     private static final String TABLE_USERS = "users";
     private static final String TABLE_EVENTS = "events";
@@ -222,6 +222,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null) cursor.close();
         return event;
     }
+    public void deleteAllEvents() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_EVENTS, null, null);
+    }
 
     public long addFavorite(int userId, int eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -297,4 +301,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
+
 }

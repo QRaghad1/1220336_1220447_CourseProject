@@ -13,7 +13,7 @@ import com.example.a1220336_1220447_courseproject.models.Event;
 
 public class ApiClient {
 
-    private static final String API_URL = "https://mocki.io/v1/da9913c5-8478-46ef-ac31-0cde08c3eed4";
+    private static final String API_URL = "https://mocki.io/v1/58c5bcd5-26e5-43bb-bbde-01a2b296bc8d";
 
     public interface ApiCallback {
         void onSuccess(List<Event> events);

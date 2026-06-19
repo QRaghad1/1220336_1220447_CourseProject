@@ -22,8 +22,9 @@ public class ApiService {
         ApiClient.fetchEvents(new ApiClient.ApiCallback() {
             @Override
             public void onSuccess(List<Event> events) {
+                dbHelper.deleteAllEvents();  // امسح القديم
                 for (Event event : events) {
-                    dbHelper.addEvent(event);
+                    dbHelper.addEvent(event);  // احفظ الجديد
                 }
                 callback.onSuccess();
             }
