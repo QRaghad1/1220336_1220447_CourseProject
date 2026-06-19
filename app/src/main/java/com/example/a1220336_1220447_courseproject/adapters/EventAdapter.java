@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,7 +52,17 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         holder.tvSeats.setText("Seats: " + event.getSeats());
 
         holder.itemView.setOnClickListener(v -> listener.onEventClick(event));
-        holder.btnFavorite.setOnClickListener(v -> listener.onFavoriteClick(event));
+
+        // Bounce animation on favorite click
+        holder.btnFavorite.setOnClickListener(v -> {
+            Animation bounce = AnimationUtils.loadAnimation(context, R.anim.bounce);
+            holder.btnFavorite.startAnimation(bounce);
+            listener.onFavoriteClick(event);
+        });
+
+        // Slide-up animation
+        Animation animation = AnimationUtils.loadAnimation(context, R.anim.slide_up);
+        holder.itemView.startAnimation(animation);
     }
 
     @Override
