@@ -27,4 +27,12 @@
         android:backgroundTint="#1F6F5F"
         android:layout_marginBottom="16dp"/>
 
+    <Button
+        android:id="@+id/btnAddAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add New Admin"
+        android:layout_margin="16dp"/>
+
+
 </LinearLayout>
