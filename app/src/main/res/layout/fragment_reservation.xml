@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#FBF5DD"
+    android:background="#EEEEEE"
     android:gravity="center_horizontal">
 
     <TextView
@@ -34,6 +34,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Confirm Reservation"
-        android:backgroundTint="#0D530E"/>
+        android:backgroundTint="#1F6F5F"/>
 
 </LinearLayout>

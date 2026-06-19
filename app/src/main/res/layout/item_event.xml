@@ -18,7 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_foreground"/>
+            android:src="@drawable/ic_launcher_foreground"
+            android:background="#6FCF97"/>
 
         <TextView
             android:id="@+id/tvTitle"
@@ -34,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="13sp"
-            android:textColor="#306D29"
+            android:textColor="#1F6F5F"
             android:text="Category"/>
 
         <TextView

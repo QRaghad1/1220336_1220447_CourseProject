@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FBF5DD">
+    android:background="#EEEEEE">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
             android:id="@+id/tvDetailCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#306D29"
+            android:textColor="#1F6F5F"
             android:textSize="14sp"
             android:layout_marginBottom="8dp"
             android:text="Category"/>
@@ -70,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Add to Favorites"
-            android:backgroundTint="#306D29"
+            android:backgroundTint="#2FA084"
             android:layout_marginBottom="8dp"/>
 
         <Button
@@ -78,7 +78,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Reserve Now"
-            android:backgroundTint="#0D530E"/>
+            android:backgroundTint="#1F6F5F"/>
 
     </LinearLayout>
 </ScrollView>

@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FBF5DD">
+    android:background="#EEEEEE">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:src="@drawable/ic_launcher_foreground"
-            android:background="#306D29"
+            android:background="#6FCF97"
             android:padding="8dp"
             android:layout_marginBottom="16dp"/>
 
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Change Photo"
-            android:backgroundTint="#306D29"
+            android:backgroundTint="#1F6F5F"
             android:layout_marginBottom="24dp"/>
 
         <!-- First Name -->
@@ -70,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save Changes"
-            android:backgroundTint="#0D530E"/>
+            android:backgroundTint="#1F6F5F"/>
 
     </LinearLayout>
 </ScrollView>

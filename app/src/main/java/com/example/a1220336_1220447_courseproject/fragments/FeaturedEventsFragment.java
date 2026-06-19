@@ -33,7 +33,7 @@ public class FeaturedEventsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_featured_events, container, false);
 
-        recyclerView = view.findViewById(R.id.recyclerFeatured);
+        recyclerView = view.findViewById(R.id.recyclerViewFeaturedEvents);
         dbHelper = DatabaseHelper.getInstance(getContext());
 
         List<Event> allEvents = dbHelper.getAllEvents();
