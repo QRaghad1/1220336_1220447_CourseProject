@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     public interface OnEventClickListener {
         void onEventClick(Event event);
         void onFavoriteClick(Event event);
+        void onReserveClick(Event event);
     }
 
     public EventAdapter(Context context, List<Event> eventList, OnEventClickListener listener) {
@@ -66,12 +68,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         holder.tvLocation.setText(event.getLocation());
         holder.tvSeats.setText("Seats: " + event.getSeats());
 
-        // Reset to placeholder immediately to avoid showing the wrong image
-        // while this row's image is still downloading (RecyclerView view reuse)
         holder.imgEvent.setImageResource(R.mipmap.ic_launcher);
         loadImageManually(event.getImage(), holder.imgEvent);
 
-        // Favorite icon state
         boolean isFav = dbHelper.isFavorite(userId, event.getId());
         holder.btnFavorite.setImageResource(isFav
                 ? android.R.drawable.btn_star_big_on
@@ -79,30 +78,23 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
         holder.itemView.setOnClickListener(v -> listener.onEventClick(event));
 
-        // Bounce animation on favorite click
         holder.btnFavorite.setOnClickListener(v -> {
             Animation bounce = AnimationUtils.loadAnimation(context, R.anim.bounce);
             holder.btnFavorite.startAnimation(bounce);
             listener.onFavoriteClick(event);
 
-            // Toggle icon immediately for instant feedback
             boolean nowFav = dbHelper.isFavorite(userId, event.getId());
             holder.btnFavorite.setImageResource(nowFav
                     ? android.R.drawable.btn_star_big_on
                     : android.R.drawable.btn_star_big_off);
         });
 
-        // Slide-up animation
+        holder.btnReserve.setOnClickListener(v -> listener.onReserveClick(event));
+
         Animation animation = AnimationUtils.loadAnimation(context, R.anim.slide_up);
         holder.itemView.startAnimation(animation);
     }
 
-    /**
-     * Downloads and decodes an image on a background thread, then posts it
-     * back to the ImageView on the main thread. Tags the ImageView with the
-     * URL being loaded so that if the view gets recycled before the download
-     * finishes, we don't accidentally set a stale image on the wrong row.
-     */
     private void loadImageManually(String imageUrl, ImageView imageView) {
         if (imageUrl == null || imageUrl.trim().isEmpty()) {
             imageView.setImageResource(R.mipmap.ic_launcher);
@@ -120,17 +112,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
                 conn.setReadTimeout(5000);
                 conn.setDoInput(true);
                 conn.connect();
-
                 InputStream input = conn.getInputStream();
                 bitmap = BitmapFactory.decodeStream(input);
                 input.close();
             } catch (Exception e) {
-                bitmap = null; // will fall back to placeholder on main thread
+                bitmap = null;
             }
 
             Bitmap finalBitmap = bitmap;
             mainHandler.post(() -> {
-                // Only apply the image if this ImageView is still meant to show this URL
                 if (imageUrl.equals(imageView.getTag())) {
                     if (finalBitmap != null) {
                         imageView.setImageBitmap(finalBitmap);
@@ -156,6 +146,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         TextView tvTitle, tvCategory, tvDate, tvLocation, tvSeats;
         ImageButton btnFavorite;
         ImageView imgEvent;
+        Button btnReserve;
 
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -166,6 +157,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             tvSeats = itemView.findViewById(R.id.tvSeats);
             btnFavorite = itemView.findViewById(R.id.btnFavorite);
             imgEvent = itemView.findViewById(R.id.imgEvent);
+            btnReserve = itemView.findViewById(R.id.btnReserve);
         }
     }
 }

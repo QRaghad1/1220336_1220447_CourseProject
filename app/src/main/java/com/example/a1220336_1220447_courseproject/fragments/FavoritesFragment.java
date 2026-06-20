@@ -57,6 +57,16 @@ public class FavoritesFragment extends Fragment {
                 List<Event> updated = dbHelper.getFavoriteEvents(userId);
                 adapter.updateList(updated);
             }
+
+            @Override
+            public void onReserveClick(Event event) {
+                ReservationFragment reservationFragment = new ReservationFragment(event);
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, reservationFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

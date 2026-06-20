@@ -8,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -45,13 +46,12 @@ public class EventsFragment extends Fragment {
         etSearch = view.findViewById(R.id.etSearch);
         spinnerFilter = view.findViewById(R.id.spinnerFilter);
 
-        // Session
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         userId = sharedPreferences.getInt("userId", -1);
 
         dbHelper = DatabaseHelper.getInstance(getContext());
         allEvents = dbHelper.getAllEvents();
-        
+
         if (allEvents.isEmpty()) {
             fetchEventsFromApi();
         }
@@ -78,12 +78,21 @@ public class EventsFragment extends Fragment {
                     Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
                 }
             }
+
+            @Override
+            public void onReserveClick(Event event) {
+                ReservationFragment reservationFragment = new ReservationFragment(event);
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, reservationFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
-        // Search
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -116,8 +125,8 @@ public class EventsFragment extends Fragment {
             @Override
             public void onFailure(String error) {
                 if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> 
-                        Toast.makeText(getContext(), "Failed to sync events: " + error, Toast.LENGTH_SHORT).show()
+                    getActivity().runOnUiThread(() ->
+                            Toast.makeText(getContext(), "Failed to sync events: " + error, Toast.LENGTH_SHORT).show()
                     );
                 }
             }
@@ -134,6 +143,15 @@ public class EventsFragment extends Fragment {
                 android.R.layout.simple_spinner_item, categories);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerFilter.setAdapter(spinnerAdapter);
+
+        spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                filterEvents(etSearch.getText().toString(), parent.getItemAtPosition(position).toString());
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
     }
 
     private void filterEvents(String query, String category) {

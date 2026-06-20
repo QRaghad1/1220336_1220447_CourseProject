@@ -25,8 +25,7 @@ public class FeaturedEventsFragment extends Fragment {
     RecyclerView recyclerView;
     EventAdapter adapter;
     DatabaseHelper dbHelper;
-
-    private static final String FEATURED_CATEGORY = "Technology";
+    int userId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,13 +35,22 @@ public class FeaturedEventsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewFeaturedEvents);
         dbHelper = DatabaseHelper.getInstance(getContext());
 
+        SharedPreferences prefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        userId = prefs.getInt("userId", -1);
+
         List<Event> allEvents = dbHelper.getAllEvents();
         List<Event> featured = new ArrayList<>();
 
+        // Featured = events with seats > 50 (more robust than hardcoded category)
         for (Event e : allEvents) {
-            if (e.getCategory().equalsIgnoreCase(FEATURED_CATEGORY)) {
+            if (e.getSeats() > 50) {
                 featured.add(e);
             }
+        }
+
+        // Fallback: if nothing matches, show all events
+        if (featured.isEmpty()) {
+            featured.addAll(allEvents);
         }
 
         adapter = new EventAdapter(getContext(), featured, new EventAdapter.OnEventClickListener() {
@@ -58,15 +66,22 @@ public class FeaturedEventsFragment extends Fragment {
 
             @Override
             public void onFavoriteClick(Event event) {
-                SharedPreferences prefs = requireContext()
-                        .getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-                int userId = prefs.getInt("userId", -1);
-                if (userId == -1) {
-                    Toast.makeText(getContext(), "Please login again.", Toast.LENGTH_SHORT).show();
-                    return;
+                if (dbHelper.isFavorite(userId, event.getId())) {
+                    Toast.makeText(getContext(), "Already in Favorites!", Toast.LENGTH_SHORT).show();
+                } else {
+                    dbHelper.addFavorite(userId, event.getId());
+                    Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
                 }
-                dbHelper.addFavorite(userId, event.getId());
-                Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onReserveClick(Event event) {
+                ReservationFragment reservationFragment = new ReservationFragment(event);
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, reservationFragment)
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 

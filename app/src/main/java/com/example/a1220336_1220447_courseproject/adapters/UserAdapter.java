@@ -49,10 +49,12 @@ public class UserAdapter extends BaseAdapter {
 
         TextView tvName = convertView.findViewById(R.id.tvUserName);
         TextView tvEmail = convertView.findViewById(R.id.tvUserEmail);
+        TextView tvRole = convertView.findViewById(R.id.tvUserRole);
         Button btnDelete = convertView.findViewById(R.id.btnDeleteUser);
 
         tvName.setText(user.getFirstName() + " " + user.getLastName());
         tvEmail.setText(user.getEmail());
+        tvRole.setText(user.isAdmin() ? "Admin" : "User");
 
         if (user.isAdmin()) {
             btnDelete.setVisibility(View.GONE);
