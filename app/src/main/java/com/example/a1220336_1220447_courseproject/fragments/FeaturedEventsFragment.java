@@ -41,7 +41,6 @@ public class FeaturedEventsFragment extends Fragment {
         List<Event> allEvents = dbHelper.getAllEvents();
         List<Event> featured = new ArrayList<>();
 
-        // Featured = events with seats > 50 (more robust than hardcoded category)
         for (Event e : allEvents) {
             if (e.getSeats() > 50) {
                 featured.add(e);

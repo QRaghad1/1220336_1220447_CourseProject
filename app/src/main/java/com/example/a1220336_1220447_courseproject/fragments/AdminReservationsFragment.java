@@ -11,7 +11,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.a1220336_1220447_courseproject.R;
 import com.example.a1220336_1220447_courseproject.database.DatabaseHelper;
+import com.example.a1220336_1220447_courseproject.models.Event;
 import com.example.a1220336_1220447_courseproject.models.Reservation;
+import com.example.a1220336_1220447_courseproject.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,19 +29,26 @@ public class AdminReservationsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admin_reservations, container, false);
 
         listView = view.findViewById(R.id.listAdminReservations);
-        dbHelper = new DatabaseHelper(getContext());
+        dbHelper = DatabaseHelper.getInstance(requireContext());
 
         List<Reservation> reservations = dbHelper.getAllReservations();
         List<String> displayList = new ArrayList<>();
+
         for (Reservation r : reservations) {
-            displayList.add("User ID: " + r.getUserId() +
-                    "\nEvent ID: " + r.getEventId() +
+            User user = dbHelper.getUserById(r.getUserId());
+            Event event = dbHelper.getEventById(r.getEventId());
+
+            String userName = (user != null) ? user.getFirstName() + " " + user.getLastName() : "Unknown User";
+            String eventName = (event != null) ? event.getTitle() : "Unknown Event";
+
+            displayList.add("User: " + userName +
+                    "\nEvent: " + eventName +
                     "\nDate: " + r.getReservationDate() +
                     "\nQty: " + r.getQuantity() +
                     "\nStatus: " + r.getStatus());
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_1, displayList);
         listView.setAdapter(adapter);
 
