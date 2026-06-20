@@ -49,7 +49,6 @@ public class ProfileFragment extends Fragment {
 
         dbHelper = DatabaseHelper.getInstance(getContext());
 
-        // Load current user
         SharedPreferences prefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         int userId = prefs.getInt("userId", -1);
 
@@ -64,9 +63,7 @@ public class ProfileFragment extends Fragment {
             etFirstName.setText(currentUser.getFirstName());
             etLastName.setText(currentUser.getLastName());
             etPhone.setText(currentUser.getPhone());
-            if (currentUser.getProfileImage() != null && !currentUser.getProfileImage().isEmpty()) {
-                imgProfile.setImageURI(Uri.parse(currentUser.getProfileImage()));
-            }
+            loadProfileImage(currentUser.getProfileImage());
         }
 
         // Image picker
@@ -75,13 +72,24 @@ public class ProfileFragment extends Fragment {
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
+
+                        // Take persistent permission so URI stays valid after restart
+                        requireContext().getContentResolver().takePersistableUriPermission(
+                                imageUri,
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        );
+
                         selectedImageUri = imageUri.toString();
                         imgProfile.setImageURI(imageUri);
                     }
                 });
 
         btnChangePhoto.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.setType("image/*");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
             imagePickerLauncher.launch(intent);
         });
 
@@ -129,6 +137,20 @@ public class ProfileFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void loadProfileImage(String uriString) {
+        if (uriString == null || uriString.isEmpty()) {
+            imgProfile.setImageResource(R.mipmap.ic_launcher);
+            return;
+        }
+        try {
+            Uri uri = Uri.parse(uriString);
+            imgProfile.setImageURI(null); // force refresh
+            imgProfile.setImageURI(uri);
+        } catch (Exception e) {
+            imgProfile.setImageResource(R.mipmap.ic_launcher);
+        }
     }
 
     private String hashPassword(String password) {

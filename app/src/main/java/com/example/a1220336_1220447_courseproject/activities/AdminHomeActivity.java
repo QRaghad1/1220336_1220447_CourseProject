@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,8 +13,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.a1220336_1220447_courseproject.R;
-import com.example.a1220336_1220447_courseproject.database.DatabaseHelper;
 import com.example.a1220336_1220447_courseproject.fragments.AdminEventsFragment;
+import com.example.a1220336_1220447_courseproject.fragments.AdminHomeFragment;
 import com.example.a1220336_1220447_courseproject.fragments.AdminReservationsFragment;
 import com.example.a1220336_1220447_courseproject.fragments.AdminUsersFragment;
 import com.google.android.material.navigation.NavigationView;
@@ -26,7 +24,6 @@ public class AdminHomeActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
-    DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +35,6 @@ public class AdminHomeActivity extends AppCompatActivity {
 
         drawerLayout = findViewById(R.id.admin_drawer_layout);
         navigationView = findViewById(R.id.admin_nav_view);
-        dbHelper = DatabaseHelper.getInstance(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar,
@@ -46,6 +42,13 @@ public class AdminHomeActivity extends AppCompatActivity {
                 R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.admin_fragment_container, new AdminHomeFragment())
+                    .commit();
+        }
 
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
