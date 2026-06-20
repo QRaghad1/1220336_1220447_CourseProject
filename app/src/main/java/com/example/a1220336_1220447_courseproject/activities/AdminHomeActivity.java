@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.a1220336_1220447_courseproject.R;
+import com.example.a1220336_1220447_courseproject.database.DatabaseHelper;
+import com.example.a1220336_1220447_courseproject.fragments.AdminEventsFragment;
+import com.example.a1220336_1220447_courseproject.fragments.AdminReservationsFragment;
+import com.example.a1220336_1220447_courseproject.fragments.AdminUsersFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class AdminHomeActivity extends AppCompatActivity {
@@ -21,6 +26,7 @@ public class AdminHomeActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
+    DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +38,7 @@ public class AdminHomeActivity extends AppCompatActivity {
 
         drawerLayout = findViewById(R.id.admin_drawer_layout);
         navigationView = findViewById(R.id.admin_nav_view);
+        dbHelper = DatabaseHelper.getInstance(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar,
@@ -45,11 +52,11 @@ public class AdminHomeActivity extends AppCompatActivity {
             Fragment fragment = null;
 
             if (id == R.id.nav_admin_users) {
-                fragment = new com.example.a1220336_1220447_courseproject.fragments.AdminUsersFragment();
+                fragment = new AdminUsersFragment();
             } else if (id == R.id.nav_admin_events) {
-                fragment = new com.example.a1220336_1220447_courseproject.fragments.AdminEventsFragment();
+                fragment = new AdminEventsFragment();
             } else if (id == R.id.nav_admin_reservations) {
-                fragment = new com.example.a1220336_1220447_courseproject.fragments.AdminReservationsFragment();
+                fragment = new AdminReservationsFragment();
             } else if (id == R.id.nav_admin_logout) {
                 SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
                 prefs.edit().clear().apply();
@@ -68,5 +75,14 @@ public class AdminHomeActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
