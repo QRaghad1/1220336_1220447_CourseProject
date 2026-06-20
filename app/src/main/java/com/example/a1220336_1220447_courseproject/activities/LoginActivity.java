@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String hashedInput = hashPassword(password);
         if (!hashedInput.equals(user.getPassword())) {
-            Toast.makeText(this, hashedInput, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Incorrect password", Toast.LENGTH_SHORT).show();
             return;
         }
 

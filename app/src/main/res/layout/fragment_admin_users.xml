@@ -15,10 +15,6 @@
         android:textColor="#1F6F5F"
         android:layout_marginBottom="8dp"/>
 
-    <ListView
-        android:id="@+id/listUsers"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
     <Button
         android:id="@+id/btnAddAdmin"
         android:layout_width="match_parent"
@@ -27,12 +23,10 @@
         android:backgroundTint="#1F6F5F"
         android:layout_marginBottom="16dp"/>
 
-    <Button
-        android:id="@+id/btnAddAdmin"
+    <ListView
+        android:id="@+id/listUsers"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add New Admin"
-        android:layout_margin="16dp"/>
-
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
 </LinearLayout>
