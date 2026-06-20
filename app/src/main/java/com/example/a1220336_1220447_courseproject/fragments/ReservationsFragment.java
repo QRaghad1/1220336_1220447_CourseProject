@@ -27,7 +27,7 @@ public class ReservationsFragment extends Fragment {
     private ReservationAdapter adapter;
 
     public ReservationsFragment() {
-        // Required empty public constructor
+
     }
 
     @Override

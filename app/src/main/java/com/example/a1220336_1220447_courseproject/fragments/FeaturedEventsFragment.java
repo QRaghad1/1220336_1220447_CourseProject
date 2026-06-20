@@ -47,7 +47,7 @@ public class FeaturedEventsFragment extends Fragment {
             }
         }
 
-        // Fallback: if nothing matches, show all events
+
         if (featured.isEmpty()) {
             featured.addAll(allEvents);
         }
